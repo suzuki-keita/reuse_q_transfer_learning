@@ -8,15 +8,20 @@ Created on 2017/09/01
 '''
 class Config:
     def __init__(self):
+        
+        """
+        回数
+        """
+
+        self.EPOCH = 100
+
         '''
         Save to CSV file
         '''
-        
-        self.Steps_filename = "/Users/takashi/Documents/knowledge/steps_1/step_"
-        self.Qtable_filename = "/Users/takashi/Documents/knowledge/qtable_1/qtable_"
-        self.TSteps_filename = "/Users/takashi/Documents/knowledge/Tsteps_1/Tstep_"
-        self.TQtable_filename = "/Users/takashi/Documents/knowledge/Tqtable_1/qtable_"
 
+        self.Steps_filedir = "/Users/takashi/Documents/knowledge/total_step/"
+        self.Steps_filename = "/Users/takashi/Documents/knowledge/total_step/data_ver2.csv"
+        
         '''
         Setup parameters of this simulation.
         If you select the '2' as DIMENSION, grid world

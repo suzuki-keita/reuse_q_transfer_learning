@@ -25,9 +25,15 @@ You should match the plase of number '3' with
 above declerations START_X and START_Y.
 
 '''
-WORLD_EPISODE = 0
+
 MAP_FILENAME = "map"
+MAP_CATEGORY = -1
+MAP_TOTAL_STEP = -1
 KNOWLEDGE_FILENAME = "knowledge"
+KNOWLEDGE_CATEGORY = -1
+TOTAL_STEP = -1
+
+
 
 GRID = np.array([[3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3],
                  [3 ,2 ,2 ,2 ,2 ,2 ,2 ,2 ,2 ,2 ,2 ,2 ,3],

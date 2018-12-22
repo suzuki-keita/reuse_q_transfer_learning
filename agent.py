@@ -73,81 +73,11 @@ class Agent(threading.Thread):
     n, ym
     Moreover, if the data is NumPy array, we can put the csv write function directory.
     '''
-    def loggerStepEpisode(self, filename, episodes, steps):
-        tmpSteps = []
-        for i in range(len(episodes)):
-             tmpSteps.append([episodes[i],steps[i]])
-        with open(filename,mode="w",buffering=-1) as w:
+    def loggerstep(self, filename, data):
+        with open(filename,mode="a",buffering=-1) as w:
             writer = csv.writer(w, lineterminator='\n')
-            writer.writerows(tmpSteps)
+            writer.writerow(data)
         return 1
-
-
-    '''
-    Q-taable logger. This method using Numpy's function, so file format is not CSV.
-    Take care!
-    '''
-    def loggerQtable(self, filename, policy):
-        tmpdate = []
-        tmp_f = 0
-        tmp_g = 0
-        tmp_h = 0
-        tmp_i = 0
-        tmp_e = 0
-        tmp_j = 0
-        tmp_k = 0
-        tmp_l = 0
-        tmp_m = 0
-        
-        # x:i y:j a:k
-        for i in range(1,world.GRID.shape[0]-1):
-           for j in range(1,world.GRID.shape[1]-1):
-               #マップチップ番号は0=路,1=壁なので注意(高桑さんのデータとは違う)
-                try:
-                   tmp_f = world.GRID[j-1][i-1]
-                except IndexError:
-                    logging.info("f is out of index")
-                try:
-                   tmp_g = world.GRID[j-1][i]
-                except IndexError:
-                    logging.info("g is out of index")
-                try:
-                   tmp_h = world.GRID[j-1][i+1]
-                except IndexError:
-                    logging.info("h is out of index")
-                try:
-                   tmp_i = world.GRID[j][i-1]
-                except IndexError:
-                    logging.info("i is out of index")
-                try:
-                   tmp_e = world.GRID[j][i]
-                except IndexError:
-                    logging.info("e is out of index")
-                try:
-                   tmp_j = world.GRID[j][i+1]
-                except IndexError:
-                    logging.info("j is out of index")
-                try:
-                   tmp_k = world.GRID[j+1][i-1]
-                except IndexError:
-                    logging.info("k is out of index")
-                try:
-                   tmp_l = world.GRID[j+1][i]
-                except IndexError:
-                    logging.info("l is out of index")
-                try:
-                   tmp_m = world.GRID[j+1][i+1]
-                except IndexError:
-                    logging.info("m is out of index")
-                for k in range(0,5):
-                    #上・右・下・左・静止
-                    #logging.info("x:",i,"y:",j,"a:",k,"Q:",policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m)
-                    tmpdate.append( [i,j,k,policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m,world.START[0],world.START[1]] )
-        with open(str(filename), mode="w", buffering=-1) as w:
-            writer = csv.writer(w, lineterminator='\n')
-            writer.writerows(tmpdate)
-        return 1
-
     '''
     Method of the learning agent.
     '''
@@ -238,19 +168,19 @@ class Agent(threading.Thread):
             """
         # Second call is Transfer Learning
         elif self.config.LEARNING_MODE == 2:
-            fileStepsTL = r"" + self.config.TSteps_filename + self.POLNUM + "_" + self.DATE + ".csv"
-            fileQtableTL = r"" + self.config.TQtable_filename + self.POLNUM + "_" + self.DATE + ".csv"
-            logging.info("filename:" + fileQtableTL)
             self.config.POLICY_NUMBER = self.config.POLICY_NUMBER + 1
             self.POLNUM = ("%d" % self.config.POLICY_NUMBER)
             logging.info('Transfer learning (Target task) start')
             self.learner(1)
-            min_episode = 0
-            while (True):
-                if self.config.STEPS[min_episode] == self.config.STEPS[min_episode+1] and self.config.STEPS[min_episode] == self.config.STEPS[min_episode+2] and self.config.STEPS[min_episode] == self.config.STEPS[min_episode+3] and self.config.STEPS[min_episode] == self.config.STEPS[min_episode+4]:
-                    logging.info("this episode:%i",min_episode)
-                    break
-                min_episode = min_episode + 1
+            total_step = 0
+            for i in range(0, len(self.config.STEPS)):
+                total_step += self.config.STEPS[i]
+            logging.info("this total step:%i", total_step)
+            world.TOTAL_STEP = total_step
+
+            write_data = [str(world.MAP_FILENAME),str(world.MAP_CATEGORY), str(world.MAP_TOTAL_STEP),str(world.KNOWLEDGE_FILENAME),str(world.KNOWLEDGE_CATEGORY),str(world.TOTAL_STEP)]
+            self.loggerstep(self.config.Steps_filename, write_data)
+            logging.info(self.config.Steps_filename)
             logging.info('Target task is terminated')
             
         else:
